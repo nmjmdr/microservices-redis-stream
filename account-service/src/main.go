@@ -1,15 +1,15 @@
 package main
 
 import (
-	"customer-service/src/router"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"account-service/src/messaging"
 )
 
-// TO DO: should be set from environment variable
-const listenAddress = ":8080"
+const listenAddress = ":8090"
 
 func handleExit() {
 }
@@ -29,9 +29,9 @@ func main() {
 		}
 	}()
 
-	fmt.Printf("API listening on: %s ...", listenAddress)
-	fmt.Println()
-
-	router.Start(listenAddress)
+	subscriber := messaging.NewRedisStreamSubscriber()
+	for {
+		subscriber.BlockingListen()
+	}
 
 }

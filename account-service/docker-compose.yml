@@ -3,25 +3,25 @@ services:
  db:
   image: postgres
   environment:
-    POSTGRES_DB: customer
+    POSTGRES_DB: account
     POSTGRES_USER: user
     POSTGRES_PASSWORD: pass
   volumes:
     - ./db-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
   ports:
-    - "5432:5432"
+    - "5433:5433"
   networks:
       default:
         aliases:
-          - svc.customer.db.io
+          - svc.account.db.io
  app:
   build: .
   ports:
-    - "8080:8080"
+    - "8090:8090"
   networks:
       default:
         aliases:
-          - svc.customer.app.io
+          - svc.account.app.io
   #links:
      #- db
   #depends_on:

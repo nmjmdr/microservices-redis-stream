@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS customer;
 CREATE TABLE customer (
     id SERIAL PRIMARY KEY, 
+    account_id TEXT NOT NULL,
     name TEXT NOT NULL, 
     created_date TIMESTAMP DEFAULT NOW()
 );
