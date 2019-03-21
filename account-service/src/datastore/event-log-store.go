@@ -44,8 +44,6 @@ func (i *eventLogStore) Get() (string, error) {
 		if err != nil {
 			return "", errors.Wrap(err, errMessage)
 		}
-	} else {
-		return "", errors.Wrap(err, errMessage)
 	}
 	return logID, nil
 }

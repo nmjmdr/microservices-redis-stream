@@ -16,3 +16,14 @@ const (
 func (e EventType) String() string {
 	return [...]string{"CustomerCreated", "InvoiceCreated"}[e]
 }
+
+func ParseStringToEventType(s string) (EventType, bool) {
+	switch s {
+	case "CustomerCreated":
+		return CustomerCreated, true
+	case "InvoiceCreated":
+		return InvoiceCreated, true
+	default:
+		return CustomerCreated, false
+	}
+}
