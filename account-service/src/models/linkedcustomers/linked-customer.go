@@ -12,7 +12,8 @@ type LinkedCustomer struct {
 	// Ideally should use a composite structure which can representt currency as well
 	// we use cents to represent monetary value
 	// ideally use https://github.com/shopspring/decimal or big.Float or https://github.com/Rhymond/go-money
-	TotalRevenueCents int64 `json:"total_revenue_cents"`
+	TotalRevenueCents int64  `json:"total_revenue_cents"`
+	Name              string `json:"name"`
 }
 
 // ValidateInput - validates invoice create input
