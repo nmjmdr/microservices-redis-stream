@@ -10,6 +10,7 @@ import (
 type Payload struct {
 	ID        string `json:"id"`
 	AccountID string `json:"account_id"`
+	Name      string `json:"name"`
 }
 
 // Deserialize - deserialize payload to InvoiceCreated

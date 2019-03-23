@@ -52,7 +52,7 @@ func (s *sync) syncMessage(message messaging.StreamMessage) error {
 		if err != nil {
 			return errors.Wrap(err, "Unable to sync customer created event to database, payload account ID is not an integer")
 		}
-		err = s.linkedCustomerStore.New(createdCustomer.ID, accountID)
+		err = s.linkedCustomerStore.New(createdCustomer.ID, accountID, createdCustomer.Name)
 		if err != nil {
 			return errors.Wrap(err, "Unable to save customer created event to database")
 		}
