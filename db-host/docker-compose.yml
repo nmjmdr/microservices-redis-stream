@@ -1,0 +1,21 @@
+version: '3'
+services:
+ db:
+  image: postgres
+  environment:
+    POSTGRES_DB: customer_accounts
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: pass
+  volumes:
+    - ./db-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+  ports:
+    - "5432:5432"
+  networks:
+      default:
+        aliases:
+          - svc.database.io
+
+networks:
+  default:
+    external:
+      name: net

@@ -35,6 +35,7 @@ func (svc *customerSvc) Create(customer customerModel.Customer) (string, error) 
 	if err != nil {
 		return "", errors.Wrap(err, "Unable to create new customer")
 	}
+	customer.ID = id
 	// publish message
 	err = svc.publisher.Publish(newCustomerCreatedEvent(customer))
 	if err != nil {

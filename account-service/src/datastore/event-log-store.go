@@ -10,30 +10,30 @@ import (
 
 // EventLogStore - data store for event log - last event recorded
 type EventLogStore interface {
-	Set(logID string) error
-	Get() (string, error)
+	Add(logID string, eventType string, payload string) error
+	LastEventID() (string, error)
 }
 
 type eventLogStore struct {
 	db *sql.DB
 }
 
-func (i *eventLogStore) Set(logID string) error {
-	query := fmt.Sprintf(`UPDATE last_recorded_event_id SET last_event_id = $1`)
+func (i *eventLogStore) Add(logID string, eventType string, payload string) error {
+	query := fmt.Sprintf(`INSERT into event_log (event_id, event_type, payload) values ($1, $2, $3)`)
 
-	rows, err := i.db.Query(query, logID)
+	rows, err := i.db.Query(query, logID, eventType, payload)
 	if err != nil {
-		return errors.Wrap(err, "Unable to set last event id in last recorded event id")
+		return errors.Wrap(err, "Unable to insert into event log")
 	}
 	rows.Close()
 	return nil
 }
 
-func (i *eventLogStore) Get() (string, error) {
-	query := fmt.Sprintf(`SELECT last_event_id FROM last_recorded_event_id`)
+func (i *eventLogStore) LastEventID() (string, error) {
+	query := fmt.Sprintf(`SELECT event_id FROM event_log ORDER BY created_date DESC LIMIT 1`)
 
 	rows, err := i.db.Query(query)
-	errMessage := "Unable to get last event id in last recorded event id"
+	errMessage := "Unable to get last recorded event id from event log"
 	if err != nil {
 		return "", errors.Wrap(err, errMessage)
 	}

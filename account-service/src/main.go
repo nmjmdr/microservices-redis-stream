@@ -6,32 +6,38 @@ import (
 	"os/signal"
 	"syscall"
 
-	"account-service/src/messaging"
+	"account-service/src/synchronizer"
+
+	"github.com/sirupsen/logrus"
 )
 
 const listenAddress = ":8090"
 
+var sync synchronizer.Sync
+
 func handleExit() {
+	sync.Stop()
 }
 
 func main() {
+	var err error
+	sync, err = synchronizer.NewSync()
+	if err != nil {
+		logrus.Errorf("Unable to start event synchronizer, Error: %s", err)
+		os.Exit(1)
+	}
 	signalChan := make(chan os.Signal)
 	signal.Notify(signalChan, syscall.SIGTERM)
 	signal.Notify(signalChan, syscall.SIGINT)
 
-	go func() {
-		select {
-		case sig := <-signalChan:
-			fmt.Printf("Signal received: %v\n", sig)
-			// handle graceful close here
-			handleExit()
-			os.Exit(0)
-		}
-	}()
-
-	subscriber := messaging.NewRedisStreamSubscriber()
-	for {
-		subscriber.BlockingListen()
+	fmt.Println("Calling sync")
+	sync.Start()
+	fmt.Println("Called sync")
+	select {
+	case sig := <-signalChan:
+		fmt.Printf("Signal received: %v\n", sig)
+		handleExit()
+		os.Exit(0)
 	}
 
 }

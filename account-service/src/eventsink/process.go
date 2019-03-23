@@ -3,6 +3,7 @@ package eventsink
 import (
 	"account-service/src/datastore"
 	"account-service/src/messaging"
+	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -20,12 +21,12 @@ func Process(quitChan chan bool,
 	logStore datastore.EventLogStore,
 	syncFn SyncMessageFn,
 ) {
-	lastReadID, err := logStore.Get()
+	lastReadID, err := logStore.LastEventID()
 	if err != nil {
 		logrus.Errorf("Unable to read last read id, Error: %s", err)
 		return
 	}
-	readFromStart := len(lastReadID) == 0
+
 loop:
 	for {
 		select {
@@ -33,17 +34,22 @@ loop:
 			break loop
 		default:
 			// Process messages one by one
-			messages, err := subscriber.BlockingListen(1, blockTime, lastReadID, readFromStart)
+			messages, err := subscriber.BlockingListen(1, blockTime, lastReadID, (len(lastReadID) == 0))
 			if err != nil {
 				logrus.Errorf("Unable to listen to stream events, Error: %s", err)
 				return
 			}
+			if len(messages) == 0 {
+				logrus.Info("Nothing to read from stream")
+				continue
+			}
+			fmt.Println("Event got: ", messages[0].ID())
 			err = syncFn(messages[0])
 			if err != nil {
 				logrus.Errorf("Unable to sync stream events to database, Error: %s", err)
 				return
 			}
-			err = logStore.Set(messages[0].ID())
+			err = logStore.Add(messages[0].ID(), messages[0].Type().String(), messages[0].Payload())
 			if err != nil {
 				logrus.Errorf("Unable to set last read stream event ID, Error: %s", err)
 				return

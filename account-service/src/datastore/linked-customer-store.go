@@ -10,7 +10,7 @@ import (
 
 // LinkedCustomerStore - data store for linked customers
 type LinkedCustomerStore interface {
-	New(customerID string) error
+	New(customerID string, accountID int) error
 	AddRevenue(customerID string, deltaRevenueCents int64) (int64, error)
 	SubtractRevenue(customerID string, deltaRevenueCents int64) (int64, error)
 	Delete(customerID string) error
@@ -20,12 +20,12 @@ type linkedCustomerStore struct {
 	db *sql.DB
 }
 
-func (i *linkedCustomerStore) New(customerID string) error {
-	query := fmt.Sprintf(`INSERT INTO linked_customers (customer_id) values ($1)`)
+func (i *linkedCustomerStore) New(customerID string, accountID int) error {
+	query := fmt.Sprintf(`INSERT INTO linked_customers (customer_id, account_id) values ($1, $2)`)
 
-	rows, err := i.db.Query(query, customerID)
+	rows, err := i.db.Query(query, customerID, accountID)
 	if err != nil {
-		return errors.Wrap(err, "Unable to save invoice to database")
+		return errors.Wrap(err, "Unable to save linked customer to database")
 	}
 	rows.Close()
 	return nil

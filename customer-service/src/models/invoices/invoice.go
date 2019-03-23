@@ -2,7 +2,6 @@ package customers
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -32,7 +31,6 @@ func (j *JsonPurchaseDate) UnmarshalJSON(b []byte) error {
 	s = strings.Trim(s, "\"")
 	t, err := time.Parse("2006-01-02", s)
 	if err != nil {
-		fmt.Println("Here: ", err, s)
 		return err
 	}
 	j.Time = t

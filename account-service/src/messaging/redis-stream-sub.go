@@ -1,6 +1,7 @@
 package messaging
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -59,24 +60,22 @@ func (r *redisStream) BlockingListen(
 ) ([]StreamMessage, error) {
 
 	if readFromStart {
-		lastReadStreamID = "$"
+		lastReadStreamID = "0"
 	}
 
 	streams, err := r.client.XRead(&redis.XReadArgs{
 		Streams: []string{eventStream, lastReadStreamID},
-		Block:   blockTime,
 		Count:   count,
 	}).Result()
 
-	if err != nil {
-		return []StreamMessage{}, errors.Wrap(err, "Unable not read from event stream")
+	fmt.Println("---> ", streams)
+
+	if err != nil && err != redis.Nil {
+		return []StreamMessage{}, errors.Wrap(err, "Unable to read from event stream")
 	}
 
-	if len(streams) == 0 {
-		return []StreamMessage{}, errors.New("Could not read from event stream, no results obtained")
-	}
-
-	if len(streams[0].Messages) == 0 {
+	if len(streams) == 0 || len(streams[0].Messages) == 0 {
+		fmt.Println("Returning in 0")
 		return []StreamMessage{}, nil
 	}
 

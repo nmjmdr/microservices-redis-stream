@@ -4,6 +4,7 @@ import (
 	customerModel "customer-service/src/models/customers"
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
@@ -26,16 +27,17 @@ func (c *customerStore) New(customer customerModel.Customer) (string, error) {
 		return "", errors.Wrap(err, "Unable to save customer to database")
 	}
 	defer rows.Close()
-	id := ""
+	id := 0
 	if rows.Next() {
 		err := rows.Scan(&id)
+		fmt.Println("Scanning id: ", id)
 		if err != nil {
 			return "", errors.Wrap(err, "Unable to read customer id from the saved record")
 		}
 	} else {
 		return "", errors.Wrap(err, "Unable to read customer id from the saved record")
 	}
-	return id, nil
+	return strconv.Itoa(id), nil
 }
 
 // Delete - delete a customer
