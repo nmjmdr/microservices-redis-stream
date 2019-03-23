@@ -5,7 +5,6 @@ import (
 	accountsDetailed "account-service/src/models/accountsdetailed"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 // AccountsService - is used to get account details (TO DO: add methods to create new accounts)
@@ -19,12 +18,16 @@ type accountsSvc struct {
 
 // NewAccountsService - creates a new instance of AccountsService
 func NewAccountsService(accountsDetailedStore datastore.AccountsDetailedStore) AccountsService {
-	svc := &customerSvc{
+	svc := &accountsSvc{
 		accountsDetailedStore: accountsDetailedStore,
 	}
 	return svc
 }
 
-func (a *AccountsService) GetAll() ([]accountsDetailed.AccountDetailed, error) {
-	return []accountsDetailed.AccountDetailed, nil
+func (a *accountsSvc) GetAll() ([]accountsDetailed.AccountDetailed, error) {
+	results, err := a.accountsDetailedStore.GetAll()
+	if err != nil {
+		return []accountsDetailed.AccountDetailed{}, errors.Wrap(err, "Unable to fetch account detail results from database")
+	}
+	return results, nil
 }

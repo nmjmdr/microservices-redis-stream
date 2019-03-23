@@ -21,7 +21,7 @@ type linkedCustomerStore struct {
 }
 
 func (i *linkedCustomerStore) New(customerID string, accountID int, name string) error {
-	query := fmt.Sprintf(`INSERT INTO linked_customers (customer_id, account_id) values ($1, $2, $3)`)
+	query := fmt.Sprintf(`INSERT INTO linked_customers (customer_id, account_id, name) values ($1, $2, $3)`)
 
 	rows, err := i.db.Query(query, customerID, accountID, name)
 	if err != nil {

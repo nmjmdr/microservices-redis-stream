@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS linked_customers;
 CREATE TABLE linked_customers (
     customer_id TEXT NOT NULL PRIMARY KEY,
     account_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
     total_revenue integer DEFAULT 0 NOT NULL
 );
 

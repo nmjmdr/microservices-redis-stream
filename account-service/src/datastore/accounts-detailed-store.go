@@ -1,7 +1,9 @@
 package datastore
 
 import (
+	accountsModel "account-service/src/models/accounts"
 	accountsDetailed "account-service/src/models/accountsdetailed"
+	linkedcustomers "account-service/src/models/linkedcustomers"
 	"database/sql"
 	"fmt"
 
@@ -16,6 +18,14 @@ type AccountsDetailedStore interface {
 
 type accountsDetailedStore struct {
 	db *sql.DB
+}
+
+func toArray(m map[int]*accountsDetailed.AccountDetailed) []accountsDetailed.AccountDetailed {
+	results := []accountsDetailed.AccountDetailed{}
+	for _, v := range m {
+		results = append(results, *v)
+	}
+	return results
 }
 
 func (c *accountStore) GetAll() ([]accountsDetailed.AccountDetailed, error) {
@@ -36,10 +46,41 @@ func (c *accountStore) GetAll() ([]accountsDetailed.AccountDetailed, error) {
 	if err != nil {
 		return []accountsDetailed.AccountDetailed{}, errors.Wrap(err, "Unable to get all account details")
 	}
-	results := []accountsDetailed.AccountDetailed{}
+	results := make(map[int]*accountsDetailed.AccountDetailed)
 	defer rows.Close()
 
-	return results, nil
+	var accountID int
+	var accountName, customerName, ownedBy, accountDescription, customerID string
+	var customerRevenue int64
+
+	for rows.Next() {
+		err := rows.Scan(&accountID, &accountName, &accountDescription, &ownedBy, &customerID, &customerName, &customerRevenue)
+		if err != nil {
+			return []accountsDetailed.AccountDetailed{}, errors.Wrap(err, "Unable to get all account details")
+		}
+		_, ok := results[accountID]
+		if !ok {
+			results[accountID] = &accountsDetailed.AccountDetailed{
+				Account: accountsModel.Account{
+					ID:          accountID,
+					Name:        accountName,
+					Description: accountDescription,
+					OwnedBy:     ownedBy,
+				},
+				Customers:         []linkedcustomers.LinkedCustomer{},
+				TotalRevenueCents: 0,
+			}
+		}
+		customer := linkedcustomers.LinkedCustomer{
+			CustomerID:        customerID,
+			Name:              customerName,
+			TotalRevenueCents: customerRevenue,
+		}
+		results[accountID].Customers = append(results[accountID].Customers, customer)
+		results[accountID].TotalRevenueCents += customer.TotalRevenueCents
+	}
+
+	return toArray(results), nil
 }
 
 // NewAccountsDetailedStore - creates a new instance of accouunt detailed store
@@ -48,7 +89,6 @@ func NewAccountsDetailedStore() (AccountsDetailedStore, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Unable to connect to accounts database")
 	}
-
 	return &accountStore{
 		db: db,
 	}, nil

@@ -9,7 +9,7 @@ import (
 
 // Account - represents an Account object
 type Account struct {
-	ID          string    `json:"id"`
+	ID          int       `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	OwnedBy     string    `json:"owned_by"`
