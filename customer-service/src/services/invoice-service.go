@@ -36,6 +36,7 @@ func (svc *invoiceSvc) Create(invoice invoiceModel.Invoice) (string, error) {
 		return "", errors.Wrap(err, "Unable to create new invoice")
 	}
 	// publish message
+	invoice.ID = id
 	err = svc.publisher.Publish(newInvoiceCreatedEvent(invoice))
 	if err != nil {
 		// We undo by deleting
