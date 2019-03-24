@@ -28,8 +28,8 @@ func Start(listenAddress string) {
 	invoiceHandler := invoicesHandler.NewInvoiceHandler(messaging.NewRedisStreamPublisher(), invoiceDatastore)
 
 	r.HandleFunc("/status", status.Handle).Methods("GET")
-	r.HandleFunc("/customers", customerHandler.Create).Methods("POST")
-	r.HandleFunc("/invoices", invoiceHandler.Create).Methods("POST")
+	r.HandleFunc("/customers", AuthMiddleware(http.HandlerFunc(customerHandler.Create))).Methods("POST")
+	r.HandleFunc("/invoices", AuthMiddleware(http.HandlerFunc(invoiceHandler.Create))).Methods("POST")
 
 	http.ListenAndServe(listenAddress, r)
 }

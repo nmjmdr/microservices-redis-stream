@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS users;
+CREATE TABLE users ( 
+    username TEXT NOT NULL PRIMARY KEY,
+    password_hash TEXT NOT NULL, 
+    created_date TIMESTAMP DEFAULT NOW(),
+);
+-- Ideally would salt the password as well
+-- Pre create some users, 
+-- TO DO: Need to have end point to create users
+INSERT INTO users (username, password_hash) VALUES ('user1', 'e38ad214943daad1d64c102faec29de4afe9da3d'); 
+INSERT INTO users (username, password_hash) VALUES ('user2', '2aa60a8ff7fcd473d321e0146afd9e26df395147'); 
+
 DROP TABLE IF EXISTS accounts;
 CREATE TABLE accounts (
     id SERIAL PRIMARY KEY, 

@@ -10,6 +10,7 @@ import (
 // AccountsService - is used to get account details (TO DO: add methods to create new accounts)
 type AccountsService interface {
 	GetAll() ([]accountsDetailed.AccountDetailed, error)
+	IsOwnedBy(userID string, accountID int) (bool, error)
 }
 
 type accountsSvc struct {
@@ -23,6 +24,7 @@ func NewAccountsService(accountsDetailedStore datastore.AccountsDetailedStore,
 ) AccountsService {
 	svc := &accountsSvc{
 		accountsDetailedStore: accountsDetailedStore,
+		accountStore:          accountStore,
 	}
 	return svc
 }

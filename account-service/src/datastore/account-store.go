@@ -39,10 +39,10 @@ func (c *accountStore) New(account accountModel.Account) (string, error) {
 	return id, nil
 }
 
-// Delete - delete an account
-func (c *accountStore) IsOwnedBy(userID string, accountID int) (bool, error) {
+// IsOwnedBy - is account owned by a given user
+func (c *accountStore) IsOwnedBy(username string, accountID int) (bool, error) {
 	query := `SELECT EXISTS (SELECT id FROM accounts WHERE id = $1 and owned_by = $2);`
-	rows, err := c.db.Query(query)
+	rows, err := c.db.Query(query, accountID, username)
 	if err != nil {
 		return false, errors.Wrap(err, "Unable to get ownership details of the given account")
 	}
