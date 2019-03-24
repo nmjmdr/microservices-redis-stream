@@ -30,7 +30,6 @@ func (c *customerStore) New(customer customerModel.Customer) (string, error) {
 	id := 0
 	if rows.Next() {
 		err := rows.Scan(&id)
-		fmt.Println("Scanning id: ", id)
 		if err != nil {
 			return "", errors.Wrap(err, "Unable to read customer id from the saved record")
 		}

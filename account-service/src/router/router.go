@@ -15,12 +15,17 @@ import (
 // Start starts the router and add routes
 func Start(listenAddress string) {
 
-	accountsDetailedStore, err := datastore.NewAccountsDetailedStore()
-	if err != nil {
-		logrus.Errorf("Unable to connect to the data store, Error: %s", err)
+	accountsDetailedStore, err1 := datastore.NewAccountsDetailedStore()
+	accountStore, err2 := datastore.NewAccountStore()
+	if err1 != nil {
+		logrus.Errorf("Unable to connect to the data store, Error: %s", err1)
 		os.Exit(1)
 	}
-	accountsSvc := accountsService.NewAccountsService(accountsDetailedStore)
+	if err2 != nil {
+		logrus.Errorf("Unable to connect to the data store, Error: %s", err2)
+		os.Exit(1)
+	}
+	accountsSvc := accountsService.NewAccountsService(accountsDetailedStore, accountStore)
 	accountsHandler := accounts.NewHandler(accountsSvc)
 
 	r := mux.NewRouter()

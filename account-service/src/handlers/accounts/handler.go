@@ -35,3 +35,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	bytes, _ := json.Marshal(results)
 	fmt.Fprintf(w, string(bytes))
 }
+
+func (h *Handler) IsOwnbedBy(w http.ResponseWriter, r *http.Request) {
+
+}

@@ -13,6 +13,7 @@ import (
 type AccountStore interface {
 	New(account accountModel.Account) (string, error)
 	Delete(id string) error
+	IsOwnedBy(userID string, accountID int) (bool, error)
 }
 
 type accountStore struct {
@@ -36,6 +37,26 @@ func (c *accountStore) New(account accountModel.Account) (string, error) {
 		return "", errors.Wrap(err, "Unable to read account id from the saved record")
 	}
 	return id, nil
+}
+
+// Delete - delete an account
+func (c *accountStore) IsOwnedBy(userID string, accountID int) (bool, error) {
+	query := `SELECT EXISTS (SELECT id FROM accounts WHERE id = $1 and owned_by = $2);`
+	rows, err := c.db.Query(query)
+	if err != nil {
+		return false, errors.Wrap(err, "Unable to get ownership details of the given account")
+	}
+	defer rows.Close()
+	result := false
+	if rows.Next() {
+		err := rows.Scan(&result)
+		if err != nil {
+			return false, errors.Wrap(err, "Unable to read result while trying to get ownership details of the given account")
+		}
+	} else {
+		return false, errors.Wrap(err, "No rows returned while trying to get ownership details of the given account")
+	}
+	return result, nil
 }
 
 // Delete - delete an account
