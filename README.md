@@ -11,6 +11,14 @@ This services provides the following endpoints:
   - Owned By
   - Total revenue for the account
   - List of customers belonging to the account
+  
+Accounts service has two pre-loaded accounts:
+_Account Name: one, Owned by: user1
+Account Name: two, Onwed by: user2_
+
+Account service also host authentication endpoint:
+/auth/login
+Ideally auth is best hosted as different service.
 
 2. Customers service (HTTP enpointds accessible on port 8080)
 - Create a new customer
@@ -39,6 +47,11 @@ Later when an Invoice is created for a customer, the accounts service gets to kn
 > It adds the new invoice amount as delta to the existing sum of all invoices for that customer
 
 Thus each services reacts to business events in a way its sees fit.
+
+### Keeping track of events consumed
+The services start consuming from the event stream at start-up. It is imperative for the service to _start consuming the events from the right event_. The right event is from where the server had last consumed successfullly. The service has to maintain an event log in persistance store. This event log has to save the id of the event last consumed.
+
+The service can then pass the last event id to `subscriber.Listen` method, which then returns the list of events from the event onwards.
 
 ### Creating a new customer:
 ```
