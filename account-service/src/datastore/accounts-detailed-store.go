@@ -33,11 +33,11 @@ func (c *accountStore) GetAll() ([]accountsDetailed.AccountDetailed, error) {
 	a.name account_name, 
 	a.description account_description, 
 	a.owned_by account_owned_by, 
-	c.customer_id customer_id, 
-	c.name customer_name, 
-	c.total_revenue customer_revenue 
+	COALESCE(c.customer_id, '') customer_id, 
+	COALESCE(c.name,'') customer_name, 
+	COALESCE(c.total_revenue,0) customer_revenue 
 	FROM accounts a 
-	INNER JOIN 
+	LEFT JOIN 
 	linked_customers c 
 	ON a.id = c.account_id 
 	ORDER BY a.id;`)
@@ -71,13 +71,15 @@ func (c *accountStore) GetAll() ([]accountsDetailed.AccountDetailed, error) {
 				TotalRevenueCents: 0,
 			}
 		}
-		customer := linkedcustomers.LinkedCustomer{
-			CustomerID:        customerID,
-			Name:              customerName,
-			TotalRevenueCents: customerRevenue,
+		if len(customerID) > 0 {
+			customer := linkedcustomers.LinkedCustomer{
+				CustomerID:        customerID,
+				Name:              customerName,
+				TotalRevenueCents: customerRevenue,
+			}
+			results[accountID].Customers = append(results[accountID].Customers, customer)
+			results[accountID].TotalRevenueCents += customer.TotalRevenueCents
 		}
-		results[accountID].Customers = append(results[accountID].Customers, customer)
-		results[accountID].TotalRevenueCents += customer.TotalRevenueCents
 	}
 
 	return toArray(results), nil

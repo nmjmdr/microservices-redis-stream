@@ -62,6 +62,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		logrus.Error("Unable to create Invoice, internal error", err)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	result := handlers.CreateResult{ID: id}
 	bytes, _ := json.Marshal(result)
 	fmt.Fprintf(w, string(bytes))

@@ -62,8 +62,9 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		logrus.Error("Unable to create customer, internal error", err)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
 	result := handlers.CreateResult{ID: id}
 	bytes, _ := json.Marshal(result)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, string(bytes))
 }

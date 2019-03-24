@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users ( 
     username TEXT NOT NULL PRIMARY KEY,
     password_hash TEXT NOT NULL, 
-    created_date TIMESTAMP DEFAULT NOW(),
+    created_date TIMESTAMP DEFAULT NOW()
 );
 -- Ideally would salt the password as well
 -- Pre create some users, 

@@ -32,6 +32,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		logrus.Error("Unable to get all account details", err)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	bytes, _ := json.Marshal(results)
 	fmt.Fprintf(w, string(bytes))
@@ -63,6 +64,7 @@ func (h *Handler) IsOwnedBy(w http.ResponseWriter, r *http.Request) {
 	result := Result{
 		OK: ok,
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	bytes, _ := json.Marshal(result)
 	fmt.Fprintf(w, string(bytes))
